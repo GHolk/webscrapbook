@@ -233,7 +233,23 @@
                   browser.downloads.onChanged.removeListener(onChanged);
                   const [item] = await browser.downloads.search({id});
                   const filename = item.filename;
-                  if (item.exists) { await browser.downloads.removeFile(id); }
+                  if (item.exists) {
+                    for (let i=0; true; i++) {
+                      try {
+                        console.log(`removing file: ${id} ${item.filename}`);
+                        await browser.downloads.removeFile(id);
+                        break;
+                      }
+                      catch (error) {
+                        const msg = `fail to remove ${item.filename}\n${error}`;
+                        console.log(msg);
+                        if (i == 5) throw error;
+                        console.log(`retry after 1s`);
+                        await sleep(1);
+                        continue;
+                      }
+                    }
+                  }
                   await browser.downloads.erase({id});
                   resolve(filename);
                 } else if (delta.error) {
