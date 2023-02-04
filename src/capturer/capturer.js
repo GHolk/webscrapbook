@@ -245,7 +245,7 @@
                         console.log(msg);
                         if (i == 5) throw error;
                         console.log(`retry after 1s`);
-                        await sleep(1);
+                        await new Promise(wake => setTimeout(wake, 1000));
                         continue;
                       }
                     }
